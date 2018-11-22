@@ -1,71 +1,81 @@
-//
-// Created by Computer on 14.11.2018.
-//
-
 #include "Array.h"
+
+using std::cout;
+using std::endl;
 
 template<typename T>
 Array<T>::Array(size_t size, const T &value) {
-    _size = size;
-    data = new byte[_size * sizeof(T)];
-    T *ptr = (T *) data;
-    for (size_t i = 0; i < _size; ++i)
+    mArraySize = size;
+    mData = new byte[mArraySize * sizeof(T)];
+    T *ptr = (T *) mData;
+    for (size_t i = 0; i < mArraySize; ++i) {
         new(ptr + i) T(value);
+    }
 }
 
 template<typename T>
 Array<T>::~Array() {
-    T *ptr = (T *) data;
-    for (size_t i = 0; i < _size; ++i)
+    T *ptr = (T *) mData;
+    for (size_t i = 0; i < mArraySize; ++i){
         ptr[i].~T();
-    delete[] data;
+    }
+    delete[] mData;
 }
 
 template<typename T>
 size_t Array<T>::size() const {
-    return _size;
+    return mArraySize;
 }
 
 template<typename T>
 T &Array<T>::operator[](size_t i) {
-    T *ptr = (T *) data;
+    T *ptr = (T *) mData;
     return *(ptr + i);
 }
 
 template<typename T>
 const T &Array<T>::operator[](size_t i) const {
-    T *ptr = (T *) data;
+    T *ptr = (T *) mData;
     return *(ptr + i);
 }
 
 template<typename T>
-void Array<T>::swap(Array<T> &arr) {
-    std::swap(_size, arr._size);
-    std::swap(data, arr.data);
+void Array<T>::mSwap(Array<T> &arr) {
+
+    size_t t = mArraySize;
+    mArraySize = arr.mArraySize;
+    arr.mArraySize = t;
+
+    byte *tmp = std::move(arr.mData);
+    arr.mData = std::move(mData);
+    mData = std::move(tmp);
+
+//    mSwap(mArraySize, arr.mArraySize);
+//    mSwap(mData, arr.mData);
 }
 
 template<typename T>
 Array<T> &Array<T>::operator=(const Array<T> &arr) {
     if (this != &arr) {
         Array<T> temp(arr);
-        temp.swap(*this);
+        temp.mSwap(*this);
     }
     return *this;
 }
 
 template<typename T>
 Array<T>::Array(const Array &arr) {
-    _size = arr._size;
-    data = new byte[_size * sizeof(T)];
-    T *ptr = (T *) data;
-    for (size_t i = 0; i < _size; ++i)
+    mArraySize = arr.mArraySize;
+    mData = new byte[mArraySize * sizeof(T)];
+    T *ptr = (T *) mData;
+    for (size_t i = 0; i < mArraySize; ++i)
         new(ptr + i) T(arr[i]);
 }
 
 template<typename T>
 void Array<T>::print() {
     for (size_t i = 0; i < size(); ++i)
-        cout << *((T *) data + i);
+        cout << *((T *) mData + i);
     cout << endl;
 }
 

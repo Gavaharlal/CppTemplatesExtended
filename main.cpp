@@ -2,41 +2,42 @@
 #include <cstddef>
 #include <string>
 #include <iostream>
-#include "Array.cpp"
+#include "Array.h"
+
 
 using namespace std;
 
 template<typename Tx>
-struct X {
-    X() {
-        this->x_ = new Tx();
-        *this->x_ = 1;
+struct MyType {
+    MyType() {
+        this->data = new Tx();
+        *this->data = 1;
     }
 
-    X(const X &inX) {
-        this->x_ = new Tx();
-        *this->x_ = *inX.x_;
+    MyType(const MyType &inX) {
+        this->data = new Tx();
+        *this->data = *inX.data;
     }
 
-    ~X() { delete this->x_; }
+    ~MyType() { delete this->data; }
 
-    friend std::ostream &operator<<(std::ostream &s, const X &obj) {
-        s << *(obj.x_);
+    friend std::ostream &operator<<(std::ostream &s, const MyType &obj) {
+        s << *(obj.data);
         return s;
     }
 
     void set(Tx i) {
-        *(this->x_) = i;
+        *(this->data) = i;
     }
 
     Tx get() {
-        return *x_;
+        return *data;
     }
 
-private:
-    X &operator=(const X &inX) = delete;
+    MyType &operator=(const MyType &inX) = delete;
 
-    Tx *x_;
+private:
+    Tx *data;
 };
 
 
@@ -61,13 +62,13 @@ bool minimal(int a, int b) {
     return a < b;
 }
 
-bool minimal(X<double> a, X<double> b) {
+bool minimal(MyType<double> a, MyType<double> b) {
     return a.get() < b.get();
 }
 
 class Greater {
 public:
-    bool operator()(X<double> a, X<double> b) {
+    bool operator()(MyType<double> a, MyType<double> b) {
         return a.get() < b.get();
     }
 
@@ -104,16 +105,14 @@ void test8() {
     }
     {
         cout << endl << "*****MyType<double>(func/class)**********" << endl;
-        X<double> x;
+        MyType<double> x;
         x.set(2.3);
-        Array<X<double>> array(7, x);
+        Array<MyType<double>> array(7, x);
         array[5].set(-0.2);
         Greater g;
         cout << minimum(array, minimal) << endl;
         cout << minimum(array, g) << endl;
     }
-
-
 }
 
 void test9() {
@@ -133,7 +132,7 @@ void test9() {
     }
 }
 
-int main(int c, char **v) {
+int main() {
     setlocale(LC_ALL, "");
     test0();
     test1();
@@ -146,6 +145,7 @@ int main(int c, char **v) {
     test8();
     test9();
 
+//    system("pause");
     return 0;
 }
 
@@ -308,24 +308,24 @@ void test6() {
 }
 
 void test7() {
-    cout << endl << "*****Test 7(X-object)**********" << endl;
+    cout << endl << "*****Test 7(MyType-object)**********" << endl;
     {
-        cout << "***** X<INT> **********" << endl;
-        X<int> x;
+        cout << "***** MyType<INT> **********" << endl;
+        MyType<int> x;
         x.set(4);
-        auto *ar = new Array<X<int>>(size_t(4), x);
+        auto *ar = new Array<MyType<int>>(size_t(4), x);
         ar->print();
         delete ar;
     }
     {
-        cout << "***** X<CHAR> (new, =, copy) **********" << endl;
-        X<char> x;
+        cout << "***** MyType<CHAR> (new, =, copy) **********" << endl;
+        MyType<char> x;
         x.set('c');
-        auto *ar = new Array<X<char>>(size_t(4), x);
+        auto *ar = new Array<MyType<char>>(size_t(4), x);
         ar->print();
-        Array<X<char>> *xr = ar;
+        Array<MyType<char>> *xr = ar;
         xr->print();
-        Array<X<char>> y(*xr);
+        Array<MyType<char>> y(*xr);
         y.print();
         delete ar;
     }
